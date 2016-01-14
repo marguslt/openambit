@@ -102,7 +102,7 @@ int MovesCountJSON::parseLogDirReply(QByteArray &input, QList<MovesCountLogDirEn
     return -1;
 }
 
-int MovesCountJSON::parseDeviceSettingsReply(QByteArray &input, MovescountSettings movescountSettings)
+int MovesCountJSON::parseDeviceSettingsReply(QByteArray &input, MovescountSettings &movescountSettings)
 {
     QJson::Parser parser;
 
