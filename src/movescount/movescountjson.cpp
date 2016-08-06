@@ -195,6 +195,7 @@ int MovesCountJSON::generateLogData(LogEntry *logEntry, QByteArray &output)
     ambit_log_sample_t *sample;
     QDateTime prevMarksDateTime;
     QDateTime prevPeriodicSamplesDateTime;
+    QDateTime UTCStartTime;
 
     QDateTime localBaseTime(QDate(logEntry->logEntry->header.date_time.year,
                                   logEntry->logEntry->header.date_time.month,
@@ -206,6 +207,10 @@ int MovesCountJSON::generateLogData(LogEntry *logEntry, QByteArray &output)
     QList<int> order = rearrangeSamples(logEntry);
     for (int i=0; i<order.length(); i++) {
         sample = &logEntry->logEntry->samples[order[i]];
+        if (i == 0){
+            UTCStartTime = QDateTime(QDate(sample->utc_time.year, sample->utc_time.month, sample->utc_time.day), QTime(sample->utc_time.hour, sample->utc_time.minute, 0).addMSecs(sample->utc_time.msec));
+            UTCStartTime.setTimeSpec(Qt::UTC);
+        }
 
         switch(sample->type) {
         case ambit_log_sample_type_periodic:
@@ -503,6 +508,8 @@ int MovesCountJSON::generateLogData(LogEntry *logEntry, QByteArray &output)
         GPSSamplesDataMap.insert("CompressedTrackPoints", compressedData.toBase64());
         content.insert("Track", GPSSamplesDataMap);                   /* compressed */
     }
+
+    content.insert("UTCStartTime", UTCStartTime.toString("yyyy-MM-ddThh:mm:ss.zzz"));
 
     output = serializer.serialize(content, &ok);
 
